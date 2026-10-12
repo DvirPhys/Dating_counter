@@ -3,167 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Our Time Together</title>
-<style>
-  body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    background: #fff6f8;
-    font-family: system-ui, sans-serif;
-    color: #443;
-    text-align: center;
-    padding: 24px;
-  }
-
-  .card {
-    background: white;
-    padding: 32px 24px;
-    border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    max-width: 420px;
-    width: 100%;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-    margin-bottom: 4px;
-  }
-
-  .date {
-    opacity: 0.65;
-    margin-bottom: 24px;
-  }
-
-  .stat {
-    background: #fff0f4;
-    border-radius: 16px;
-    padding: 16px;
-    margin: 10px 0;
-  }
-
-  .number {
-    font-size: 2.2rem;
-    font-weight: 700;
-    color: #d6336c;
-  }
-
-  .label {
-    font-size: 0.95rem;
-    opacity: 0.75;
-  }
-
-  .small {
-    font-size: 0.9rem;
-    opacity: 0.7;
-    margin-top: 18px;
-  }
-</style>
+<title>Date Test</title>
 </head>
-<body>
-  <div class="card">
-    <h1>Wiebke Lea and Dvir:</h1>
-    <h1>Time since we started dating 💕</h1>
-    <p class="date" id="startDate"></p>
+<body style="font-family: system-ui; padding: 20px;">
 
-    <div class="stat">
-      <div class="number" id="yearsMonthsDays">0y 0m 0d</div>
-      <div class="label">years, months and days</div>
-    </div>
+<h2>Date counter test</h2>
 
-    <div class="stat">
-      <div class="number" id="days">0</div>
-      <div class="label">total days together</div>
-    </div>
-
-    <div class="stat">
-      <div class="number" id="weeks">0</div>
-      <div class="label">total weeks together</div>
-    </div>
-
-    <div class="stat">
-      <div class="number" id="months">0</div>
-      <div class="label">total full months together</div>
-    </div>
-
-    <div class="stat">
-      <div class="number" id="hours">0</div>
-      <div class="label">total hours together</div>
-    </div>
-
-    <div class="stat">
-      <div class="number" id="minutes">0</div>
-      <div class="label">total minutes together</div>
-    </div>
-
-    <div class="stat">
-      <div class="number" id="seconds">0</div>
-      <div class="label">total seconds together</div>
-    </div>
-
-    <p class="small">Updating live ⏱️</p>
-  </div>
+<p><b>Start date:</b> <span id="start"></span></p>
+<p><b>Current date:</b> <span id="now"></span></p>
+<p><b>Elapsed milliseconds:</b> <span id="elapsed"></span></p>
+<p><b>Days:</b> <span id="days"></span></p>
+<p><b>Hours:</b> <span id="hours"></span></p>
+<p><b>Minutes:</b> <span id="minutes"></span></p>
+<p><b>Seconds:</b> <span id="seconds"></span></p>
 
 <script>
-  // CHANGE THIS LINE:
-  // Use the exact date and time you started dating.
-  // Format: YYYY-MM-DDTHH:MM:SS
   const START_DATE = new Date("2026-07-05T16:34:00");
 
-  const MS_PER_SECOND = 1000;
-  const MS_PER_MINUTE = 60 * MS_PER_SECOND;
-  const MS_PER_HOUR = 60 * MS_PER_MINUTE;
-  const MS_PER_DAY = 24 * MS_PER_HOUR;
-
-  function updateCounter() {
+  function update() {
     const now = new Date();
     const elapsed = now - START_DATE;
 
-    if (elapsed < 0) {
-      document.getElementById("startDate").textContent =
-        "Starts on " + START_DATE.toLocaleString();
+    document.getElementById("start").textContent = START_DATE.toString();
+    document.getElementById("now").textContent = now.toString();
+    document.getElementById("elapsed").textContent = elapsed.toLocaleString();
 
-      document.getElementById("yearsMonthsDays").textContent = "Not started yet";
-      document.getElementById("days").textContent = "0";
-      document.getElementById("weeks").textContent = "0";
-      document.getElementById("months").textContent = "0";
-      document.getElementById("hours").textContent = "0";
-      document.getElementById("minutes").textContent = "0";
-      document.getElementById("seconds").textContent = "0";
+    if (elapsed < 0) {
+      document.getElementById("days").textContent = "Start date is in the future";
+      document.getElementById("hours").textContent = "-";
+      document.getElementById("minutes").textContent = "-";
+      document.getElementById("seconds").textContent = "-";
       return;
     }
 
-    // Total elapsed units
-    const totalSeconds = Math.floor(elapsed / MS_PER_SECOND);
-    const totalMinutes = Math.floor(elapsed / MS_PER_MINUTE);
-    const totalHours = Math.floor(elapsed / MS_PER_HOUR);
-    const totalDays = Math.floor(elapsed / MS_PER_DAY);
-    const totalWeeks = Math.floor(totalDays / 7);
+    document.getElementById("days").textContent =
+      Math.floor(elapsed / (1000 * 60 * 60 * 24));
 
-    // Calendar-based years, months, and days
-    const startDay = new Date(
-      START_DATE.getFullYear(),
-      START_DATE.getMonth(),
-      START_DATE.getDate()
-    );
+    document.getElementById("hours").textContent =
+      Math.floor(elapsed / (1000 * 60 * 60));
 
-    const today = new Date(
-      now.getFullYear(),
-      now.getMonth(),
-      now.getDate()
-    );
+    document.getElementById("minutes").textContent =
+      Math.floor(elapsed / (1000 * 60));
 
-    let months =
-      (today.getFullYear() - startDay.getFullYear()) * 12 +
-      (today.getMonth() - startDay.getMonth());
+    document.getElementById("seconds").textContent =
+      Math.floor(elapsed / 1000);
+  }
 
-    if (today.getDate() < startDay.getDate()) {
-      months--;
-    }
+  update();
+  setInterval(update, 1000);
+</script>
 
-    let years = Math.floor(months / 12);
-    let remainingMonths = months % 12;
-
-    let anniversary = new Date(startDay);
-    anniversary.setMonth(anniversary.getMonth()
+</body>
+</html>
