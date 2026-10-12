@@ -16,108 +16,154 @@
     text-align: center;
     padding: 24px;
   }
+
   .card {
     background: white;
-    padding: 32px;
+    padding: 32px 24px;
     border-radius: 24px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
     max-width: 420px;
     width: 100%;
   }
-  h1 { font-size: 1.5rem; margin-bottom: 4px; }
-  .date { opacity: .65; margin-bottom: 24px; }
+
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 4px;
+  }
+
+  .date {
+    opacity: 0.65;
+    margin-bottom: 24px;
+  }
+
   .stat {
     background: #fff0f4;
     border-radius: 16px;
     padding: 16px;
     margin: 10px 0;
   }
+
   .number {
     font-size: 2.2rem;
     font-weight: 700;
     color: #d6336c;
   }
-  .label { font-size: .95rem; opacity: .75; }
+
+  .label {
+    font-size: 0.95rem;
+    opacity: 0.75;
+  }
+
+  .small {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    margin-top: 18px;
+  }
 </style>
 </head>
 <body>
   <div class="card">
-    <h1>Wiebke Lea and Dvir</h1>
+    <h1>Wiebke Lea and Dvir:</h1>
     <h1>Time since we started dating 💕</h1>
     <p class="date" id="startDate"></p>
 
     <div class="stat">
+      <div class="number" id="yearsMonthsDays">0y 0m 0d</div>
+      <div class="label">years, months and days</div>
+    </div>
+
+    <div class="stat">
       <div class="number" id="days">0</div>
-      <div class="label">days together</div>
+      <div class="label">total days together</div>
     </div>
 
     <div class="stat">
       <div class="number" id="weeks">0</div>
-      <div class="label">weeks together</div>
+      <div class="label">total weeks together</div>
     </div>
 
     <div class="stat">
       <div class="number" id="months">0</div>
-      <div class="label">full months together</div>
+      <div class="label">total full months together</div>
     </div>
 
     <div class="stat">
-      <div class="number" id="ymd">0y 0m 0d</div>
-      <div class="label">years, months and days</div>
+      <div class="number" id="hours">0</div>
+      <div class="label">total hours together</div>
     </div>
+
+    <div class="stat">
+      <div class="number" id="minutes">0</div>
+      <div class="label">total minutes together</div>
+    </div>
+
+    <div class="stat">
+      <div class="number" id="seconds">0</div>
+      <div class="label">total seconds together</div>
+    </div>
+
+    <p class="small">Updating live ⏱️</p>
   </div>
 
 <script>
-  // Change this to the date you started dating.
-  // Format: YYYY-MM-DD
-  const START_DATE = new Date("2026-07-05T00:00:00");
+  // CHANGE THIS LINE:
+  // Use the exact date and time you started dating.
+  // Format: YYYY-MM-DDTHH:MM:SS
+  const START_DATE = new Date("2026-07-05T16:34:00");
 
-  const now = new Date();
+  const MS_PER_SECOND = 1000;
+  const MS_PER_MINUTE = 60 * MS_PER_SECOND;
+  const MS_PER_HOUR = 60 * MS_PER_MINUTE;
+  const MS_PER_DAY = 24 * MS_PER_HOUR;
 
-  // Calendar-day difference, ignoring time of day.
-  const startDay = new Date(START_DATE.getFullYear(), START_DATE.getMonth(), START_DATE.getDate());
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  function updateCounter() {
+    const now = new Date();
+    const elapsed = now - START_DATE;
 
-  const msPerDay = 24 * 60 * 60 * 1000;
-  const totalDays = Math.floor((today - startDay) / msPerDay);
-  const totalWeeks = Math.floor(totalDays / 7);
+    if (elapsed < 0) {
+      document.getElementById("startDate").textContent =
+        "Starts on " + START_DATE.toLocaleString();
 
-  // Full calendar months elapsed.
-  let months = (today.getFullYear() - startDay.getFullYear()) * 12
-             + (today.getMonth() - startDay.getMonth());
-
-  // If today's day-of-month is before the anniversary day, subtract one month.
-  if (today.getDate() < startDay.getDate()) months--;
-
-  // Years, remaining months, remaining days.
-  let years = Math.floor(months / 12);
-  let remMonths = months % 12;
-
-  let anniversary = new Date(startDay);
-  anniversary.setMonth(anniversary.getMonth() + months);
-
-  let remDays = Math.floor((today - anniversary) / msPerDay);
-  if (remDays < 0) {
-    remMonths--;
-    if (remMonths < 0) {
-      years--;
-      remMonths += 12;
+      document.getElementById("yearsMonthsDays").textContent = "Not started yet";
+      document.getElementById("days").textContent = "0";
+      document.getElementById("weeks").textContent = "0";
+      document.getElementById("months").textContent = "0";
+      document.getElementById("hours").textContent = "0";
+      document.getElementById("minutes").textContent = "0";
+      document.getElementById("seconds").textContent = "0";
+      return;
     }
-    anniversary = new Date(startDay);
-    anniversary.setMonth(anniversary.getMonth() + months - 1);
-    remDays = Math.floor((today - anniversary) / msPerDay);
-  }
 
-  document.getElementById("startDate").textContent =
-    "Since " + startDay.toLocaleDateString(undefined, {
-      year: "numeric", month: "long", day: "numeric"
-    });
+    // Total elapsed units
+    const totalSeconds = Math.floor(elapsed / MS_PER_SECOND);
+    const totalMinutes = Math.floor(elapsed / MS_PER_MINUTE);
+    const totalHours = Math.floor(elapsed / MS_PER_HOUR);
+    const totalDays = Math.floor(elapsed / MS_PER_DAY);
+    const totalWeeks = Math.floor(totalDays / 7);
 
-  document.getElementById("days").textContent = totalDays.toLocaleString();
-  document.getElementById("weeks").textContent = totalWeeks.toLocaleString();
-  document.getElementById("months").textContent = Math.max(0, months).toLocaleString();
-  document.getElementById("ymd").textContent =
-    `${years}y ${remMonths}m ${remDays}d`;
-</script>
-</body>
-</html>
+    // Calendar-based years, months, and days
+    const startDay = new Date(
+      START_DATE.getFullYear(),
+      START_DATE.getMonth(),
+      START_DATE.getDate()
+    );
+
+    const today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    let months =
+      (today.getFullYear() - startDay.getFullYear()) * 12 +
+      (today.getMonth() - startDay.getMonth());
+
+    if (today.getDate() < startDay.getDate()) {
+      months--;
+    }
+
+    let years = Math.floor(months / 12);
+    let remainingMonths = months % 12;
+
+    let anniversary = new Date(startDay);
+    anniversary.setMonth(anniversary.getMonth()
